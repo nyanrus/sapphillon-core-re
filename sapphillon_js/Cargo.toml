@@ -1,0 +1,15 @@
+[package]
+name    = "sapphillon_js"
+version = "0.1.0"
+edition = "2021"
+
+# Both cdylib (for dynamic loading by sapphillon_core) and rlib (for tests).
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+extism                    = { workspace = true }
+abi_stable                = { workspace = true }
+sapphillon_js_interface   = { path = "../sapphillon_js_interface" }
+serde_json                = { workspace = true }
+anyhow                    = { workspace = true }

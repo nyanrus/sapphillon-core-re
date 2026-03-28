@@ -2,8 +2,8 @@
 members = [
     "proto",
     "ext_plugin",
-    "sapphillon_deno_interface",
-    "sapphillon_deno",
+    "sapphillon_js_interface",
+    "sapphillon_js",
     "sapphillon_core",
 ]
 resolver = "2"

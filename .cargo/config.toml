@@ -14,7 +14,7 @@
 linker  = "C:/msys64/mingw64/bin/gcc.exe"
 ar      = "C:/msys64/mingw64/bin/ar.exe"
 
-# dlltool is required for cdylib builds (sapphillon_deno).
+# dlltool is required for cdylib builds (sapphillon_js).
 # Cargo automatically discovers it via PATH or target.*.dlltool below.
 # Uncomment once MSYS2 is installed:
 # [target.x86_64-pc-windows-gnu.dll]

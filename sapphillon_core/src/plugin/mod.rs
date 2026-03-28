@@ -4,7 +4,7 @@
 //! `get_opdecl() -> OpDecl` is gone — `deno_core` types must not cross the
 //! ABI boundary.  Instead, each function exposes a `call()` method that
 //! `sapphillon_core::runtime` wraps into the `PluginDispatcher` callback.
-//! The JS global `__sapphillon_dispatch` (in `sapphillon_deno`) routes
+//! The JS global `__sapphillon_dispatch` (in `sapphillon_js`) routes
 //! every JS call to the right handler through that callback.
 
 use std::sync::Arc;

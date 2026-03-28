@@ -1,13 +1,12 @@
-//! Stable ABI contract between `sapphillon_core` and `sapphillon_deno`.
+//! Stable ABI contract between `sapphillon_core` and `sapphillon_js`.
 //!
-//! Neither side imports `deno_core` through this crate — all communication
-//! crosses the boundary as UTF-8 JSON strings via C-compatible function
-//! pointers.
+//! Neither side imports the JS engine directly — all communication crosses
+//! the boundary as UTF-8 JSON strings via C-compatible function pointers.
 //!
 //! # Why abi_stable?
-//! `deno_core` pulls in V8, making it a very heavy compile unit.  Isolating
-//! it inside a `cdylib` means the rest of the workspace can be rebuilt without
-//! touching V8.  `abi_stable` gives us type-checked, versioned dynamic
+//! The JS engine (QuickJS via Extism) is a heavy compile unit isolated in a
+//! `cdylib`.  Isolating it means the rest of the workspace rebuilds without
+//! touching the engine.  `abi_stable` gives us type-checked, versioned dynamic
 //! linking in pure Rust.
 
 use abi_stable::{
@@ -22,7 +21,7 @@ use abi_stable::{
 // ── PluginDispatcher ──────────────────────────────────────────────────────
 //
 // An FFI-safe callback that `sapphillon_core` constructs and passes into the
-// Deno dylib so the JS runtime can route `op_sapphillon_dispatch` calls back
+// JS engine dylib so the runtime can route `__sapphillon_dispatch` calls back
 // to whichever plugin (internal Rust or external Extism) owns the op.
 //
 // Layout: a fat pointer — raw context + `extern "C"` call/drop pair.
@@ -40,8 +39,8 @@ pub type DropCtxFn = extern "C" fn(CtxPtr);
 
 /// FFI-safe, stateful op dispatcher.
 ///
-/// Constructed by `sapphillon_core::runtime` and handed to the Deno dylib for
-/// the duration of a single `run_script` call.
+/// Constructed by `sapphillon_core::runtime` and handed to the JS engine dylib
+/// for the duration of a single `run_script` call.
 #[repr(C)]
 #[derive(Clone, Copy, StableAbi)]
 pub struct PluginDispatcher {
@@ -64,10 +63,10 @@ impl PluginDispatcher {
 
 // ── JsEngineLib / JsEngineLibRef ─────────────────────────────────────────
 //
-// The module exported from `sapphillon_deno.dll` / `libsapphillon_deno.so`.
+// The module exported from `sapphillon_js.dll` / `libsapphillon_js.so`.
 // `sapphillon_core` loads it at runtime via `JsEngineLibRef::load_from_file`.
 
-/// Prefix struct exported by the `sapphillon_deno` cdylib.
+/// Prefix struct exported by the `sapphillon_js` cdylib.
 ///
 /// Adding new `#[sabi(not_prefix_field)]` fields to the *end* is
 /// backward-compatible; existing callers keep working.
@@ -79,7 +78,7 @@ pub struct JsEngineLib {
     ///
     /// - `script`       — the main workflow source.
     /// - `pre_scripts`  — JS snippets run before `script` (e.g. plugin shims).
-    /// - `dispatcher`   — routes every `Sapphillon.*` op call to the right handler.
+    /// - `dispatcher`   — routes every `Sapphillon.*` call to the right handler.
     ///
     /// Returns `Ok(captured_stdout)` or `Err(error_message + JS stack trace)`.
     #[sabi(last_prefix_field)]
@@ -92,7 +91,7 @@ pub struct JsEngineLib {
 
 impl RootModule for JsEngineLibRef {
     declare_root_module_statics! { JsEngineLibRef }
-    const BASE_NAME: &'static str = "sapphillon_deno";
-    const NAME: &'static str = "sapphillon_deno";
+    const BASE_NAME: &'static str = "sapphillon_js";
+    const NAME: &'static str = "sapphillon_js";
     const VERSION_STRINGS: VersionStrings = package_version_strings!();
 }

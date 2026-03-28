@@ -20,7 +20,7 @@ fn main() {
         panic!(
             "\n\
             ────────────────────────────────────────────────────────\n\
-            sapphillon_deno build error: js_engine.wasm not found.\n\
+            sapphillon_js build error: js_engine.wasm not found.\n\
             \n\
             Build it once from the JS plugin source:\n\
             \n\

@@ -1,7 +1,7 @@
 //! JS runtime orchestration.
 //!
 //! # Responsibilities
-//! * Load the `sapphillon_deno` cdylib once per process.
+//! * Load the `sapphillon_js` cdylib once per process.
 //! * Build a [`PluginDispatcher`] callback that routes every `op_sapphillon_dispatch`
 //!   call to the correct handler:
 //!   - Internal functions → direct `PluginFunctionTrait::call()`.
@@ -24,7 +24,7 @@ use std::{
 
 use abi_stable::std_types::{RErr, ROk, RResult, RStr, RString};
 use ext_plugin::{extplugin_client, RsJsBridgeArgs, SapphillonPackage};
-use sapphillon_deno_interface::{DropCtxFn, JsEngineLibRef, PluginDispatcher};
+use sapphillon_js_interface::{DropCtxFn, JsEngineLibRef, PluginDispatcher};
 
 use crate::{
     error::{Error, SapphillonError, WorkflowRuntimeError, WorkflowRuntimeErrorType},
@@ -36,7 +36,7 @@ use crate::{
 
 static JS_ENGINE: OnceLock<JsEngineLibRef> = OnceLock::new();
 
-/// Load the `sapphillon_deno` cdylib from `dylib_path`.
+/// Load the `sapphillon_js` cdylib from `dylib_path`.
 ///
 /// Must be called once before any workflow is run.  Subsequent calls with
 /// different paths are ignored (the engine is already loaded).

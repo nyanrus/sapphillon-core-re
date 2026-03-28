@@ -4,7 +4,7 @@
 #   npm install -g @extism/js-pdk
 #   extism-js plugin.js -o js_engine.wasm
 #
-# The resulting js_engine.wasm is embedded in sapphillon_deno via include_bytes!.
+# The resulting js_engine.wasm is embedded in sapphillon_js via include_bytes!.
 # This file exists only to prevent cargo from treating this dir as an orphan crate.
 #
 # DO NOT add this to the workspace [members] list.

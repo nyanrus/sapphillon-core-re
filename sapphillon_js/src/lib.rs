@@ -11,8 +11,8 @@
 //! envelope `{"ok":"…"}` or `{"err":"…"}`.
 //!
 //! # ABI boundary
-//! The public surface (`ffi_run_script`) is identical to the old deno_core
-//! version — `sapphillon_core` and `sapphillon_deno_interface` are unchanged.
+//! The public surface (`ffi_run_script`) is defined in `sapphillon_js_interface`
+//! and consumed by `sapphillon_core` — neither crate changes when this one does.
 
 use abi_stable::{
     export_root_module,
@@ -20,7 +20,7 @@ use abi_stable::{
     std_types::{RErr, ROk, RResult, RStr, RString, RVec},
 };
 use extism::{Function, Manifest, Plugin, UserData, Val, ValType, Wasm};
-use sapphillon_deno_interface::{JsEngineLib, JsEngineLibRef, PluginDispatcher};
+use sapphillon_js_interface::{JsEngineLib, JsEngineLibRef, PluginDispatcher};
 
 // ── Embedded WASM ─────────────────────────────────────────────────────────
 // Built once from sapphillon_javy_plugin/plugin.js by running:
@@ -115,7 +115,7 @@ fn run_script_impl(
         .call::<&str, &str>("run_script", &input_str)
         .map_err(|e| e.to_string())?;
 
-    // Drop the dispatcher context (equivalent to the old deno_core drop_fn call).
+    // Drop the dispatcher context now that the plugin call is complete.
     (dispatcher.drop_fn)(dispatcher.ctx);
 
     Ok(stdout.to_owned())
