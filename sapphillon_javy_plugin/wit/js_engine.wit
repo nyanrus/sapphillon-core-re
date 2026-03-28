@@ -1,0 +1,6 @@
+package sapphillon:js-engine@0.1.0;
+
+world js-engine {
+    import dispatch: func(op-key: string, args-json: string) -> result<string, string>;
+    export run-script: func(script: string, pre-scripts: list<string>) -> result<string, string>;
+}

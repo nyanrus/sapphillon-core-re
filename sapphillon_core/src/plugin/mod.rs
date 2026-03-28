@@ -4,7 +4,7 @@
 //! `get_opdecl() -> OpDecl` is gone — `deno_core` types must not cross the
 //! ABI boundary.  Instead, each function exposes a `call()` method that
 //! `sapphillon_core::runtime` wraps into the `PluginDispatcher` callback.
-//! A single `op_sapphillon_dispatch` Deno op (in `sapphillon_deno`) routes
+//! The JS global `__sapphillon_dispatch` (in `sapphillon_deno`) routes
 //! every JS call to the right handler through that callback.
 
 use std::sync::Arc;
@@ -36,7 +36,7 @@ pub trait PluginFunctionTrait: Send + Sync {
 
     /// Optional JavaScript to run before the main workflow script.
     /// Used to install the `Sapphillon.<pkg>.<func>` shim that calls
-    /// `Deno.core.ops.op_sapphillon_dispatch`.
+    /// `__sapphillon_dispatch`.
     fn get_pre_run_js(&self) -> Option<String>;
 }
 
@@ -165,7 +165,7 @@ impl PluginFunctionTrait for CorePluginExternalFunction {
         unreachable!("external function call() should never be invoked directly")
     }
 
-    /// JS shim that routes through `op_sapphillon_dispatch`.
+    /// JS shim that routes through `__sapphillon_dispatch`.
     ///
     /// Op key format: `"<package_id>::<function_name>"`.
     fn get_pre_run_js(&self) -> Option<String> {
@@ -177,7 +177,7 @@ impl PluginFunctionTrait for CorePluginExternalFunction {
 globalThis.Sapphillon = globalThis.Sapphillon ?? {{}};
 globalThis.Sapphillon["{pkg}"] = globalThis.Sapphillon["{pkg}"] ?? {{}};
 globalThis.Sapphillon["{pkg}"]["{func}"] = function(args) {{
-    const raw = Deno.core.ops.op_sapphillon_dispatch(
+    const raw = __sapphillon_dispatch(
         "{op_key}",
         JSON.stringify(args ?? {{}})
     );
@@ -250,7 +250,7 @@ impl PluginFunctionTrait for ExternalFnRef {
 globalThis.Sapphillon = globalThis.Sapphillon ?? {{}};
 globalThis.Sapphillon["{pkg}"] = globalThis.Sapphillon["{pkg}"] ?? {{}};
 globalThis.Sapphillon["{pkg}"]["{func}"] = function(args) {{
-    const raw = Deno.core.ops.op_sapphillon_dispatch(
+    const raw = __sapphillon_dispatch(
         "{op_key}",
         JSON.stringify(args ?? {{}})
     );

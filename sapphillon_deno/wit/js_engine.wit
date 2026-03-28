@@ -1,0 +1,19 @@
+package sapphillon:js-engine@0.1.0;
+
+/// Component world for the Sapphillon JS runtime.
+///
+/// The host (sapphillon_deno, Wasmtime) provides:
+///   - `dispatch` — routes every `__sapphillon_dispatch(opKey, argsJson)` JS
+///     call through the ABI-stable PluginDispatcher back into sapphillon_core.
+///
+/// The component (sapphillon_javy_plugin, QuickJS / Javy) exports:
+///   - `run-script` — executes pre-scripts then the main workflow script,
+///     capturing console output; returns accumulated stdout or a JS error.
+world js-engine {
+    /// Route a plugin call.  Called by the JS global `__sapphillon_dispatch`.
+    import dispatch: func(op-key: string, args-json: string) -> result<string, string>;
+
+    /// Execute a workflow.
+    /// Returns `ok(stdout)` or `err(message + JS stack trace)`.
+    export run-script: func(script: string, pre-scripts: list<string>) -> result<string, string>;
+}
