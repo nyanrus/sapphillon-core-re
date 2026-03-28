@@ -1,0 +1,10 @@
+[package]
+name    = "sapphillon_deno_interface"
+version = "0.1.0"
+edition = "2021"
+
+# This crate has NO deno_core dependency — it is the boundary crate that both
+# sapphillon_deno (provider) and sapphillon_core (consumer) depend on.
+
+[dependencies]
+abi_stable = { workspace = true }
